@@ -4,7 +4,11 @@
 
 #include <math.h>
 #include <string>
+#include <memory>
+#include <stdlib.h>
 
+#define WHITESPACE 64
+#define EQUALS 65
 #define INVALID 66
 
 using std::string;
