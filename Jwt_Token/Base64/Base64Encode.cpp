@@ -121,7 +121,7 @@ int Base64Encode::DecodeUrl(const char *decode, size_t num_decode, char *out, si
 
 string Base64Encode::DecodeUrl(const string &input) {
   size_t num_decoded = DecodeBytesNeeded(input.size());
-  str_ptr decoded(new char[num_decoded]);
+  std::unique_ptr<char[]> decoded(new char[num_decoded]);
   if (DecodeUrl(input.c_str(), input.size(), decoded.get(), &num_decoded)) {
     return "";
   }
