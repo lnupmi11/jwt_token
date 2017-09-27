@@ -72,3 +72,59 @@ int Base64Encode::EncodeUrl(const char *encode, size_t num_encode, char *result,
 	*num_result = (result - start);
 	return 0;
 }
+
+int Base64Encode::DecodeUrl(const char *decode, size_t num_decode, char *out, size_t *num_out) {
+  if ((decode + num_decode) < decode || (out + *num_out) < out)
+    return 1;
+
+  if (*num_out < DecodeBytesNeeded(num_decode))
+    return 1;
+
+  const char *end = decode + num_decode;
+  const char *out_start = out;
+  char iter = 0;
+  uint32_t buf = 0;
+
+  while (decode < end) {
+    uint8_t ch = *decode++;
+    char c = DecodeChar(ch);
+
+    switch (c) {
+    case INVALID:
+      return 1; // invalid input, return error
+    default:
+      buf = buf << 6 | c;
+      iter++; // increment the number of iteration
+      // If the buffer is full, split it into bytes
+      if (iter == 4) {
+        *(out++) = (buf >> 16) & 0xff;
+        *(out++) = (buf >> 8) & 0xff;
+        *(out++) = buf & 0xff;
+        buf = 0;
+        iter = 0;
+      }
+    }
+  }
+
+  if (iter == 3) {
+    *(out++) = (buf >> 10) & 0xff;
+    *(out++) = (buf >> 2) & 0xff;
+  } else {
+    if (iter == 2) {
+      *(out++) = (buf >> 4) & 0xff;
+    }
+  }
+
+  *num_out = (out - out_start);
+  return 0;
+}
+
+string Base64Encode::DecodeUrl(const string &input) {
+  size_t num_decoded = DecodeBytesNeeded(input.size());
+  str_ptr decoded(new char[num_decoded]);
+  if (DecodeUrl(input.c_str(), input.size(), decoded.get(), &num_decoded)) {
+    return "";
+  }
+  return string(decoded.get(), num_decoded);
+}
+
