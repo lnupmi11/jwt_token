@@ -64,3 +64,11 @@ ipch/
 
 *.vcxproj
 *.vcxproj.filters
+
+# Clion make files
+cmake-build-debug/
+.idea/
+Cmake*
+cmake*
+*.cmake
+*.xml
