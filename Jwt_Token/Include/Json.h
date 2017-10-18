@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-#include <set>
+#include <map>
 #include <algorithm>
 
 using namespace std;
@@ -12,24 +12,21 @@ using namespace std;
 class Json
 {
 private:
-    set<pair<string, string>> data;
+    map<string, string> data;
     void convert(string str);
 
-    void assign(string str1, string str2);
 public:
-    Json(){};
+    Json() = default;;
 
-    Json(string str);
+	explicit Json(string str);
 
-    string toString();
-
-    const char* toChars();
+    string toString(bool pretty=false) const;
 
     void input();
 
-    void output();
-
     string operator[](string key);
+
+	friend ostream &operator<<(ostream &os, const Json &json);
 };
 
 

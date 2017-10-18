@@ -8,10 +8,10 @@ inline char Base64Encode::EncodeChar(unsigned in)
 
 string Base64Encode::EncodeUrl(const string &input)
 {
-	size_t num_encoded = EncodeBytesNeeded(input.size());
-	std::unique_ptr<char[]> encoded(new char[num_encoded]);
-	EncodeUrl(input.c_str(), input.size(), encoded.get(), &num_encoded);
-	return string(encoded.get(), num_encoded - 1);
+	size_t encoded_size = EncodeBytesNeeded(input.size());
+	auto encoded = new char[encoded_size];
+	EncodeUrl(input.c_str(), input.size(), encoded, &encoded_size);
+	return string(encoded, encoded_size - 1);
 }
 
 int Base64Encode::EncodeUrl(const char *encode, size_t num_encode, char *result, size_t *num_result)
