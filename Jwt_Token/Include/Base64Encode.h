@@ -68,9 +68,9 @@ public:
 	*/
 	inline static size_t EncodeBytesNeeded(size_t num_encode)
 	{
-		int left = num_encode - ((num_encode / 3) * 3);
+		size_t left = num_encode - ((num_encode / 3) * 3);
 		int sub = left == 1 ? 2 : (left == 2 ? 1 : 0);
-		return 4 * ceil((1.0*num_encode) / 3) + 1 - sub;
+		return static_cast<size_t>(4 * ceil((1.0 * num_encode) / 3) + 1 - sub);
 	}
 
 private:

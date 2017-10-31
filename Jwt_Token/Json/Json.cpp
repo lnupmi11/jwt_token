@@ -1,3 +1,5 @@
+#include <utility>
+
 #include "../Include/Json.h"
 
 
@@ -6,96 +8,81 @@ using namespace std;
 //string example: "alg:Base64 type:JWT name:John"
 void Json::convert(string str)
 {
-    string key, value, pair;
-    size_t pos;
-    stringstream ss(str);
-    while(getline(ss, pair, ' '))
-    {
-        pos = pair.find(':');
-        key = pair.substr(0, pos);
-        value = pair.substr(pos + 1);
-        if(key.empty())
-        {
-            continue;
-        }
-        assign(key, value);
-    }
-}
-
-void Json::assign(string str1, string str2)
-{
-    data.insert(make_pair(str1, str2));
+	string key, value, pair;
+	size_t pos;
+	stringstream ss(str);
+	// TODO: doesn't work
+	// Expected: { "url": "Bad code" }
+	// Actual: {""Bad":""Bad", ""url"":"", "code"":"code"", "{":"{", "}":"}", }
+	while (getline(ss, pair, ' '))
+	{
+		pos = pair.find(':');
+		key = pair.substr(0, pos);
+		value = pair.substr(pos + 1);
+		if (key.empty())
+		{
+			continue;
+		}
+		data[key] = value;
+	}
 }
 
 Json::Json(string str)
 {
-    convert(str);
+	convert(std::move(str));
 }
 
-string Json::toString()
+string Json::toString(bool pretty) const
 {
-    string res;
-    set<pair<string, string>>::iterator iter;
-    for (iter = data.begin(); iter != data.end(); iter++)
-    {
-        res += iter->first + ":";
-        res += iter->second + " ";
-    }
-    return res;
-}
-
-const char* Json::toChars()
-{
-    return toString().c_str();
+	string res;
+	res += "{ ";
+	if (pretty) res += "\n";
+	for (const auto &iter : data)
+	{
+		res += "\"" + iter.first + "\"" + ":";
+		res += "\"" + iter.second + "\"" + ", ";
+		if (pretty) res += "\n";
+	}
+	res += "}";
+	return res;
 }
 
 void Json::input()
 {
-    string key;
-    string value;
-    cout << "Type \"Stop!\" as a key to break input:\n";
-    while(true)
-    {
-        cout << "Key: ";
-        cin >> key;
-        if(key == "Stop!")
-        {
-            break;
-        }
-        cout << "Value: ";
-        cin >> value;
-        assign(key, value);
-    }
+	string key;
+	string value;
+	cout << "Type \"Stop!\" as a key to break input:\n";
+	while (true)
+	{
+		cout << "Key: ";
+		cin >> key;
+		if (key == "Stop!")
+		{
+			break;
+		}
+		cout << "Value: ";
+		cin >> value;
+		data[key] = value;
+	}
 }
 
-void Json::output()
+ostream &operator<<(ostream &os, const Json &json)
 {
-    set<pair<string, string>>::iterator iter;
-    cout << "{\n";
-    for (iter = data.begin(); iter != data.end(); iter++)
-    {
-        cout << "\t\"" << iter->first << "\"" << " : ";
-        cout << "\"" << iter->second << "\"" << ";\n";
-    }
-    cout << "}\n";
+	os << json.toString(true);
+	return os;
 }
 
 string Json::operator[](string key)
 {
-    string empy_str;
-    bool entrance;
-    auto it = find_if(data.begin(), data.end(),
-                       [&](const pair<string, string>& val) -> bool
-                       {
-                           entrance = (val.first == key);
-                           return entrance;
-                       });
-    if(entrance)
-    {
-        return it->second;
-    }
-    else
-    {
-        return empy_str;
-    }
+	bool entrance;
+	auto it = find_if(data.begin(), data.end(),
+					  [&](const pair<string, string> &val) -> bool
+					  {
+						  entrance = (val.first == key);
+						  return entrance;
+					  });
+	if (entrance)
+		return it->second;
+	else
+		return "";
 }
