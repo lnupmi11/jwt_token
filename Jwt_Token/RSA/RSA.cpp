@@ -1,27 +1,26 @@
 #include "../Include/RSA.h"
 
 
-int gcd(int a, int h)
-{
-    int temp;
-    while (true)
-    {
-        temp = a % h;
-        if(temp == 0)
-        {
-            return h;
-        }
-        a = h;
-        h = temp;
-    }
-}
+#define FIRST_PRIME 37
+#define SECOND_PRIME 53
+#define SHIFT 96
 
-bool RSA::isPrime(int digit)
+
+using namespace std;
+
+
+int Rsa::lastPosEncoded = 0;
+
+vector<int> Rsa::bridge;
+
+
+bool is_prime(long int digit)
 {
-    int i;
-    for (i = 2; i <= sqrt(digit); i++)
+    int value;
+    value = (int) sqrt(digit);
+    for (int index = 2; index <= value; index++)
     {
-        if (digit % i == 0)
+        if (digit % index == 0)
         {
             return false;
         }
@@ -29,45 +28,93 @@ bool RSA::isPrime(int digit)
     return true;
 }
 
-int RSA::countModulus()
+int Rsa::findExponent()
 {
-    return FIRST_PRIME * SECOND_PRIME;
+    int e = 0;
+    for (int index = 2; index < Rsa::countEilerFunc(); index++)
+    {
+        if (Rsa::countEilerFunc() % index == 0)
+        {
+            continue;
+        }
+        if (is_prime(index) && index != FIRST_PRIME && index != SECOND_PRIME)
+        {
+            e = index;
+            if (getPrivateKey(e) > 0)
+            {
+                break;
+            }
+        }
+    }
+    return e;
 }
 
-int RSA::findExponent()
+int Rsa::getPrivateKey(int param)
 {
-    int e = 2;
-    while (e < countEilerFunc())
+    int var = 1;
+    while (true)
     {
-        // e must be co-prime to countEilerFunc() and
-        // smaller than countEilerFunc().
-        if(gcd(e, countEilerFunc()) == 1)
+        var = var + Rsa::countEilerFunc();
+        if (var % param == 0)
         {
-            break;
-        }
-        else
-        {
-            e++;
+            return (var / param);
         }
     }
 }
 
-int RSA::countEilerFunc()
+int Rsa::countModulus()
+{
+    return FIRST_PRIME * SECOND_PRIME;
+}
+
+int Rsa::countEilerFunc()
 {
     return (FIRST_PRIME - 1) * (SECOND_PRIME - 1);
 }
 
-int RSA::generatePrivateKey(int digit)
+string Rsa::encodeUrl(string str)
 {
-    return (digit * countEilerFunc() + 1) / findExponent();
+    string result;
+    bridge.resize(str.size());
+    findExponent();
+    int ct, var, length;
+    int index = 0;
+    length = (int) str.size();
+    while (index != length)
+    {
+        str[index] = str[index] - (char) SHIFT;
+        var = 1;
+        for (int counter = 0; counter < Rsa::findExponent(); counter++)
+        {
+            var = var * str[index];
+            var = var % Rsa::countModulus();
+        }
+        bridge[index] = var;
+        ct = var + SHIFT;
+        result += (char) ct;
+        index++;
+    }
+    lastPosEncoded = index;
+    return result;
 }
 
-string RSA::EncodeUrl(const string &data)
+string Rsa::decodeUrl(string str)
 {
-    //TODO
-}
-
-string RSA::DecodeUrl(const string &data)
-{
-    //TODO
+    int digit, value;
+    int index = 0;
+    string data;
+    while (lastPosEncoded != index)
+    {
+        value = bridge[index];
+        int var = 1;
+        for (int counter = 0; counter < getPrivateKey(findExponent()); counter++)
+        {
+            var = var * value;
+            var = var % Rsa::countModulus();
+        }
+        digit = var + SHIFT;
+        str[index] = (char) digit;
+        index++;
+    }
+    return str;
 }
