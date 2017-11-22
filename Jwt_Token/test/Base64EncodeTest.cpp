@@ -1,4 +1,4 @@
-#include "../include/Base64Encode.h"
+#include "Base64Encode.h"
 #include "gtest/gtest.h"
 
 using namespace std;
@@ -16,28 +16,29 @@ TEST(Base64UncodeTest, simple_sentence)
 }
 
 
-TEST(Base64UncodeTest, buffer_overflows) 
+TEST(Base64UncodeTest, buffer_overflows)
 {
 	string str_dec = "SGVsbG8hTWF5IEkgaW50cm9kdWNlIHlvdSBhIEpXVCB0b2tlbi4";
 	char buffer[4096];
 
-	for (size_t num_dec = 0; num_dec < str_dec.size(); num_dec++) 
+	for (size_t num_dec = 0; num_dec < str_dec.size(); num_dec++)
 	{
 		for (size_t num_buffer = 0; num_buffer < Base64Encode::DecodeBytesNeeded(num_dec) / 2; num_buffer++)
 		{
-			EXPECT_EQ(1, Base64Encode::DecodeUrl(str_dec.c_str(), num_dec, buffer,&num_buffer));
+			EXPECT_EQ(1, Base64Encode::DecodeUrl(str_dec.c_str(), num_dec, buffer, &num_buffer));
 		}
 	}
 }
 
 
-TEST(Base64UncodeTest, buffer_underflows) 
+TEST(Base64UncodeTest, buffer_underflows)
 {
 	string str_enc = "Hello!May I introduce you a JWT token.";
 	char buffer[4096];
 
-	for (size_t num_enc = 6; num_enc < str_enc.size(); num_enc++) {
-		for (size_t num_buffer = 0;num_buffer < Base64Encode::EncodeBytesNeeded(num_enc) / 2;num_buffer++) 
+	for (size_t num_enc = 6; num_enc < str_enc.size(); num_enc++)
+	{
+		for (size_t num_buffer = 0; num_buffer < Base64Encode::EncodeBytesNeeded(num_enc) / 2; num_buffer++)
 		{
 			EXPECT_EQ(1, Base64Encode::EncodeUrl(str_enc.c_str(), num_enc, buffer, &num_buffer));
 		}
@@ -45,10 +46,10 @@ TEST(Base64UncodeTest, buffer_underflows)
 }
 
 
-TEST(Base64UncodeTest, partial) 
+TEST(Base64UncodeTest, partial)
 {
-	const char *simpleLine = "c2ltcGxlTGluZQ";
-	char buf[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	const char* simpleLine = "c2ltcGxlTGluZQ";
+	char buf[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	size_t cBuf = 9;
 
 	Base64Encode::DecodeUrl(simpleLine, 8, buf, &cBuf);
@@ -58,11 +59,11 @@ TEST(Base64UncodeTest, partial)
 }
 
 
-TEST(Base64UncodeTest, len) 
+TEST(Base64UncodeTest, len)
 {
 	string hello;
 
-	for (int i = 0; i < 9; i++) 
+	for (int i = 0; i < 9; i++)
 	{
 		hello.append("x");
 		string enc = Base64Encode::EncodeUrl(hello);
@@ -72,7 +73,7 @@ TEST(Base64UncodeTest, len)
 }
 
 
-TEST(Base64UncodeTest, spec) 
+TEST(Base64UncodeTest, spec)
 {
 	EXPECT_STREQ("", Base64Encode::DecodeUrl("").c_str());
 	EXPECT_STREQ("s", Base64Encode::DecodeUrl("cw").c_str());
@@ -84,7 +85,7 @@ TEST(Base64UncodeTest, spec)
 }
 
 
-TEST(Base64UncodeTest, spec_inv) 
+TEST(Base64UncodeTest, spec_inv)
 {
 	EXPECT_STREQ("", Base64Encode::EncodeUrl("").c_str());
 	EXPECT_STREQ("cw", Base64Encode::EncodeUrl("s").c_str());
@@ -96,16 +97,17 @@ TEST(Base64UncodeTest, spec_inv)
 }
 
 
-TEST(Base64UncodeTest, bad) 
+TEST(Base64UncodeTest, bad)
 {
 	EXPECT_STREQ("", Base64Encode::DecodeUrl("Zg=").c_str());
 	EXPECT_STREQ("", Base64Encode::DecodeUrl("Zg#").c_str());
 	EXPECT_STREQ("", Base64Encode::DecodeUrl("Zm9vYmE@").c_str());
-	EXPECT_STREQ("", Base64Encode::DecodeUrl("VGhlIHF1aWNrIGJy\nb3duIGZveCBqdW1wcyBvdmVyIHRoZSBsYXp5IGRvZyBhbmQgc29tZSBleHR").c_str());
+	EXPECT_STREQ("", Base64Encode::DecodeUrl(
+			"VGhlIHF1aWNrIGJy\nb3duIGZveCBqdW1wcyBvdmVyIHRoZSBsYXp5IGRvZyBhbmQgc29tZSBleHR").c_str());
 }
 
 
-TEST(Base64UncodeTest, invers) 
+TEST(Base64UncodeTest, invers)
 {
 	string res = "dCm-Fpm5S8VCg0Mi8LPdMNwrZhQWtox7hFsH6oG-yf4";
 	string out = Base64Encode::DecodeUrl(res);
@@ -115,13 +117,13 @@ TEST(Base64UncodeTest, invers)
 }
 
 
-TEST(Base64UncodeTest, many_times_encode_to_another_array) 
+TEST(Base64UncodeTest, many_times_encode_to_another_array)
 {
 	string encode = "Simple text";
 	size_t buf = 4096;
 	char res[4096];
 
-	for (int i = 0; i < MANY_TIMES; i++) 
+	for (int i = 0; i < MANY_TIMES; i++)
 	{
 		Base64Encode::EncodeUrl(encode.c_str(), encode.size(), res, &buf);
 	}
@@ -132,7 +134,7 @@ TEST(Base64UncodeTest, many_times_encode)
 {
 	string encode = "Simple text";
 
-	for (int i = 0; i < MANY_TIMES; i++) 
+	for (int i = 0; i < MANY_TIMES; i++)
 	{
 		Base64Encode::EncodeUrl(encode);
 	}
@@ -145,28 +147,19 @@ TEST(Base64UncodeTest, many_times_decode_to_another_array)
 	char res[4096];
 	size_t cRes = 4096;
 
-	for (int i = 0; i < MANY_TIMES; i++) 
+	for (int i = 0; i < MANY_TIMES; i++)
 	{
 		Base64Encode::DecodeUrl(encode.c_str(), encode.size(), res, &cRes);
 	}
 }
 
 
-
-TEST(Base64UncodeTest, many_times_decode) 
+TEST(Base64UncodeTest, many_times_decode)
 {
 	string encode = "U2ltcGxlIHRleHQ";
 
-	for (int i = 0; i < MANY_TIMES; i++) 
+	for (int i = 0; i < MANY_TIMES; i++)
 	{
 		Base64Encode::DecodeUrl(encode);
 	}
-}
-
-int main(int argc, char **argv)
-{
-	::testing::InitGoogleTest(&argc, argv);
-	RUN_ALL_TESTS();
-	system("pause");
-	return 0;
 }

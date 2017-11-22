@@ -1,4 +1,4 @@
-#include "../Include/JsonValue.h"
+#include "JsonValue.h"
 
 // Macros to free an array/object
 #define FREE_ARRAY(x) do {for (auto&& item : (x)) delete item; } while(false)
