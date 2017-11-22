@@ -4,36 +4,37 @@
 #include <iostream>
 #include <cmath>
 #include <string>
-
-
-#define FIRST_PRIME  37
-#define SECOND_PRIME  53
+#include <vector>
 
 
 using namespace std;
 
-int gcd(int a, int h);
+
+bool is_prime(long int digit);
 
 
-class RSA
+class Rsa
 {
 private:
+    static int lastPosEncoded;
+    // data that is needed in both encoding and decoding
+    static vector<int> bridge;
 
-    bool isPrime(int digit);
+    static int findExponent();
 
-    int countModulus();
-    // should be prime, must be < countEilerFunc()
-    int findExponent();
+    static int getPrivateKey(int param);
 
-    int generatePrivateKey(int digit);
+    static int countModulus();
 
-    int countEilerFunc();
+    static int countEilerFunc();
 
 public:
 
-    string EncodeUrl(const string& data);
+    static string encodeUrl(string str);
 
-    string DecodeUrl(const string& data);
-
+    static string decodeUrl(string str);
 };
+
+
+
 #endif
