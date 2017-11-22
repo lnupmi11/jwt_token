@@ -1,34 +1,28 @@
 #ifndef JWT_TOKEN_JSON_H
 #define JWT_TOKEN_JSON_H
 
-#include <iostream>
+#include <vector>
 #include <string>
-#include <sstream>
 #include <map>
-#include <algorithm>
+#include "JsonValue.h"
 
-using namespace std;
-
-class Json
+class JSON
 {
-private:
-    map<string, string> data;
-    void convert(string str);
+	friend class JSONValue;
 
 public:
-    Json() = default;;
-
-	explicit Json(string str);
-
-    string toString(bool pretty=false) const;
-
-    void input();
-
-    string operator[](string key);
-
-	friend ostream &operator<<(ostream &os, const Json &json);
+	static JSONValue* Parse(const char *data);
+	static JSONValue* Parse(const wchar_t *data);
+	static JSONValue* Parse(wstring *data);
+	static std::wstring Stringify(const JSONValue *value);
+protected:
+	static bool SkipWhitespace(const wchar_t **data);
+	static bool ExtractString(const wchar_t **data, std::wstring &str);
+	static double ParseInt(const wchar_t **data);
+	static double ParseDecimal(const wchar_t **data);
+private:
+	JSON();
 };
 
 
 #endif
-

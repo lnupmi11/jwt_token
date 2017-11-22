@@ -1,5 +1,5 @@
 #include "../include/Base64Encode.h"
-#include "gtest\gtest.h"
+#include "gtest/gtest.h"
 
 using namespace std;
 
