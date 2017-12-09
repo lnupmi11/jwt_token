@@ -1,4 +1,4 @@
-#include "../Include/RSA.h"
+#include "RSA.h"
 
 
 #define FIRST_PRIME 37

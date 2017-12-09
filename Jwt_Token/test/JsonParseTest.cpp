@@ -1,12 +1,14 @@
-//#include "Base64Encode.h"
-//#include "Json.h"
-//#include "RSA.h"
+//
+// Created by orest on 22/11/17.
+//
+
+#include "gtest/gtest.h"
 
 #include "JsonValue.h"
 
-int main()
+TEST(JSON, json_parse)
 {
-	const wstring data = LR"(
+	const wstring test1 = LR"(
 [
 	"JSON test Pattern pass1",
 	{"object with 1 member":["array with 1 element"]},
@@ -66,24 +68,7 @@ int main()
 ,"rosebud"]
 )";
 
-	/*const wstring data = LR"(
-{
-	"quote": "\"",
-	"jsontext": "{\"object with 1 member\":[\"array with 1 element\"]}",
-	"quotes": "&#34; \u0022 %22 0x22 034 &#x22;",
-	"\/\\\"\b\f\n\r\t`1~!@#$%^&*()_+-=[]{}|;:',./<>?"
-: "A key can be any string"
-}
-)";*/
-	wcout << "data=" << data << endl;
-//	wcout << "trimmed=" << JSONValue::removeWhitespace(data) << endl;
-	auto value = JSONValue::parse(data);
-	if (value)
-	{
-		wcout << "parsed=" << value->stringify(2) << endl;
-		return 0;
-	} else
-	{
-		return 1;
-	}
+	auto value = JSONValue::parse(test1);
+	ASSERT_NE(nullptr, value);
+	ASSERT_TRUE(value->isArray());
 }
