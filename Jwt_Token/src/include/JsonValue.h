@@ -95,7 +95,7 @@ public:
 
 	vector<wstring> objectKeys() const;
 
-	wstring stringify(const uint& indent_size = 0, const uint& indent_depth = 0) const;
+	wstring stringify(const unsigned& indent_size = 0, const unsigned& indent_depth = 0) const;
 
 	static wstring stringifyString(const wstring& str);
 
@@ -141,7 +141,7 @@ private:
 		JSONObject* object_value;
 	};
 
-	wstring getIndent(const uint& indent_size, const uint& indent_depth) const;
+	wstring getIndent(const unsigned& indent_size, const unsigned& indent_depth) const;
 
 	static bool quoteClosed(const wstring& data);
 };
