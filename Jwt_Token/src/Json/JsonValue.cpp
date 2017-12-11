@@ -1,10 +1,10 @@
-#include "JsonValue.h"
+#include "../include/JsonValue.h"
 
 // Macros to free an array/object
 #define FREE_ARRAY(x) do {for (auto&& item : (x)) delete item; } while(false)
 #define FREE_OBJECT(x) do {for (auto iter = begin(x); iter != end(x); ++iter) delete (*iter).second; } while(false)
 
-ulong countSubstr(const wstring& s, const wstring& sub)
+unsigned long countSubstr(const wstring& s, const wstring& sub)
 {
 	int count = 0;
 	size_t nPos = s.find(sub, 0); // fist occurrence
@@ -22,7 +22,7 @@ wstring JSONValue::removeWhitespace(const wstring& data)
 	const wstring whitespace = L" \t\r\n\v\b\f";
 	wstring result;
 	bool quote_found = false;
-	for (ulong i = 0; i < data.length(); ++i)
+	for (unsigned long i = 0; i < data.length(); ++i)
 	{
 		if (data[i] == L'"')
 		{
@@ -42,7 +42,7 @@ wstring JSONValue::removeWhitespace(const wstring& data)
 bool JSONValue::quoteClosed(const wstring& data)
 {
 	wstring last_item = data;
-	ulong found_pos;
+	unsigned long found_pos;
 	found_pos = last_item.find(L"\\\\");
 	while (found_pos != -1UL)
 	{
@@ -93,9 +93,9 @@ JSONValue* JSONValue::parse(wstring data)
 	{
 //		wcout << "array" << endl;
 		JSONArray array;
-		ulong it = 1, start = 1;
-		uint bracketOpened = 0;
-		uint bracesOpened = 0;
+		unsigned long it = 1, start = 1;
+		unsigned bracketOpened = 0;
+		unsigned bracesOpened = 0;
 
 		bool quote_found = false;
 
@@ -175,11 +175,11 @@ JSONValue* JSONValue::parse(wstring data)
 //		wcout << "object" << endl;
 		JSONObject object;
 
-		ulong it = 1, start = 1;
-		uint bracketOpened = 0;
-		uint bracesOpened = 0;
+		unsigned long it = 1, start = 1;
+		unsigned bracketOpened = 0;
+		unsigned bracesOpened = 0;
 		bool quote_found = false;
-		ulong colon_pos = 0;
+		unsigned long colon_pos = 0;
 		bool error = false;
 
 		while (it != data.length())
@@ -451,7 +451,7 @@ vector<wstring> JSONValue::objectKeys() const
 	return vector<wstring>();
 }
 
-wstring JSONValue::stringify(const uint& indent_size, const uint& indent_depth) const
+wstring JSONValue::stringify(const unsigned& indent_size, const unsigned& indent_depth) const
 {
 	wstring result;
 	wstring indent;
@@ -555,7 +555,7 @@ wstring JSONValue::stringify(const uint& indent_size, const uint& indent_depth) 
 	return result;
 }
 
-wstring JSONValue::getIndent(const uint& indent_size, const uint& indent_depth) const
+wstring JSONValue::getIndent(const unsigned& indent_size, const unsigned& indent_depth) const
 {
 	wstring indent;
 	if (indent_size > 0 && indent_depth > 0)
@@ -633,7 +633,7 @@ wstring JSONValue::extractString(const wstring& data)
 	{
 		return L"";
 	}
-	ulong it = 1;
+	unsigned long it = 1;
 	while (it != data.length())
 	{
 		// Save the char so we can change it if need be

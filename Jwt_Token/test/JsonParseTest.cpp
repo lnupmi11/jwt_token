@@ -4,7 +4,7 @@
 
 #include "gtest/gtest.h"
 
-#include "JsonValue.h"
+#include "../src/include/JsonValue.h"
 
 TEST(JSON, json_parse)
 {
@@ -67,8 +67,177 @@ TEST(JSON, json_parse)
 1e00,2e+00,2e-00
 ,"rosebud"]
 )";
-
+	
 	auto value = JSONValue::parse(test1);
 	ASSERT_NE(nullptr, value);
 	ASSERT_TRUE(value->isArray());
+	
 }
+
+TEST(JSON, null)
+{
+	const wstring test;
+	auto value = JSONValue::parse(test);
+	ASSERT_EQ(nullptr, value);
+	//ASSERT_TRUE(value->isNull());
+}
+
+TEST(JSON, brackets)
+{
+	const wstring test = L"[]";
+	auto value = JSONValue::parse(test);
+	ASSERT_NE(nullptr, value);
+}
+
+TEST(JSON, number)
+{
+	const wstring test = L"[1]";
+	auto value = JSONValue::parse(test);
+	ASSERT_NE(nullptr, value);
+}
+
+TEST(JSON, symbol_without_quotation_marks)
+{
+	const wstring test = L"[a]";
+	auto value = JSONValue::parse(test);
+	ASSERT_EQ(nullptr, value);
+}
+
+TEST(JSON, symbol_with_quotation_marks)
+{
+	const wstring test = LR"(["a"])";
+	auto value = JSONValue::parse(test);
+	ASSERT_NE(nullptr, value);
+}
+
+TEST(JSON, many_numbers)
+{
+	const wstring test = L"[ 1, 2 ,  3,4,5]";
+	auto value = JSONValue::parse(test);
+	ASSERT_NE(nullptr, value);
+	ASSERT_TRUE(value->isArray());
+}
+
+TEST(JSON, many_symbols)
+{
+	const wstring test = LR"([1, "abc" , 3.14, -4])";
+	auto value = JSONValue::parse(test);
+	ASSERT_NE(nullptr, value);
+	ASSERT_TRUE(value->isArray());
+}
+
+TEST(JSON, array_of_arrays_of_symbols)
+{
+	const wstring test = LR"([ "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 
+"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+"ccccccccccccccccccccccc",
+"dddddddddddddddddddddddddddddddddddddddddddddddddddd" ])";
+	auto value = JSONValue::parse(test);
+	ASSERT_NE(nullptr, value);
+}
+
+TEST(JSON, comment)
+{
+	const wstring test = LR"(
+// Comment for array
+[
+   // Comment within array
+   "one-element"
+])";
+	auto value = JSONValue::parse(test);
+	ASSERT_NE(nullptr, value);
+}
+
+TEST(JSON, simple_json)
+{
+	const wstring test = LR"({ 
+	"count" : 1234,
+	"name" : { "aka" : "T.E.S.T.", "id" : 123987 },
+	"attribute" : [ 
+		"random", 
+		"short", 
+		"bold", 
+		12, 
+		{ "height" : 7, "width" : 64 } 
+		],
+	"test": { "1" : 
+		{ "2" : 
+			{ "3" :  { "coord" : [ 1,2] } 
+			} 
+		}
+	}
+})";
+	auto value = JSONValue::parse(test);
+	ASSERT_NE(nullptr, value);
+	ASSERT_TRUE(value->isObject());
+}
+
+TEST(JSON, integer)
+{
+	const wstring test = L"-2147483648";
+	auto value = JSONValue::parse(test);
+	ASSERT_NE(nullptr, value);
+	ASSERT_TRUE(value->isNumber());
+}
+
+TEST(JSON, object)
+{
+	const wstring test = L"{}";
+	auto value = JSONValue::parse(test);
+	ASSERT_NE(nullptr, value);
+	ASSERT_TRUE(value->isObject());
+}
+
+TEST(JSON, out_of_range)
+{
+	const wstring test = L"8589934592";
+	auto value = JSONValue::parse(test);
+	ASSERT_NE(nullptr, value);
+	ASSERT_TRUE(value->isNumber());
+}
+
+TEST(JSON, string)
+{
+	const wstring test = LR"("\"abc\\def\"")";
+	auto value = JSONValue::parse(test);
+	ASSERT_NE(nullptr, value);
+	ASSERT_TRUE(value->isString());
+}
+
+TEST(JSON, random_symbols_string)
+{
+	const wstring test = LR"("!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]
+^_`abcdefghijklmnopqrstuvwxyz{|}~!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]
+^_`abcdefghijklmnopqrstuvwxyz{|}~!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]
+^_`abcdefghijklmnopqrstuvwxyz{|}~!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]
+^_`abcdefghijklmnopqrstuvwxyz{|}~!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]
+^_`abcdefghijklmnopqrstuvwxyz{|}~!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]
+^_`abcdefghijklmnopqrstuvwxyz{|}~!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]
+^_`abcdefghijklmnopqrstuvwxyz{|}~!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]
+^_`abcdefghijklmnopqrstuvwxyz{|}~!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]
+^_`abcdefghijklmnopqrstuvwxyz{|}~!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]
+^_`abcdefghijklmnopqrstuvwxyz{|}~!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]
+^_`abcdefghijklmnopqrstuvwxyz{|}~!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]
+^_`abcdefghijklmnopqrstuvwxyz{|}~!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]
+^_`abcdefghijklmnopqrstuvwxyz{|}~!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]
+^_`abcdefghijklmnopqrstuvwxyz{|}~!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]
+^_`abcdefghijklmnopqrstuvwxyz{|}~!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]
+^_`abcdefghijklmnopqrstuvwxyz{|}~!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]
+^_`abcdefghijklmnopqrstuvwxyz{|}~!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]
+^_`abcdefghijklmnopqrstuvwxyz{|}~!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]
+^_`abcdefghijklmnopqrstuvwxyz{|}~!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]
+^_`abcdefghijklmnopqrstuvwxyz{|}~")";
+	auto value = JSONValue::parse(test);
+	ASSERT_NE(nullptr, value);
+	ASSERT_TRUE(value->isString());
+}
+
+TEST(JSON, unicode)
+{
+	const wstring test = LR"("\u00A2")";
+	auto value = JSONValue::parse(test);
+	ASSERT_NE(nullptr, value);
+	ASSERT_TRUE(value->isString());
+}
+
+

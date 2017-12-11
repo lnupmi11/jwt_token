@@ -1,4 +1,4 @@
-#include "Base64Encode.h"
+#include "../include/Base64Encode.h"
 
 inline char Base64Encode::EncodeChar(unsigned in)
 {
