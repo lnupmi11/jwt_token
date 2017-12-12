@@ -423,32 +423,81 @@ const JSONObject& JSONValue::asObject() const
 
 std::size_t JSONValue::countChildren() const
 {
-	return 0;
+	switch (type)
+	{
+	case JSONType_Array:
+		return array_value->size();
+	case JSONType_Object:
+		return object_value->size();
+	default:
+		return 0;
+	}
 }
 
 bool JSONValue::hasChild(std::size_t index) const
 {
-	return false;
+	if (type == JSONType_Array)
+	{
+		return index < array_value->size();
+	}
+	else
+	{
+		return false;
+	}
 }
 
 JSONValue* JSONValue::child(std::size_t index)
 {
-	return nullptr;
+	if (index < array_value->size())
+	{
+		return (*array_value)[index];
+	}
+	else
+	{
+		return nullptr;
+	}
 }
 
 bool JSONValue::hasChild(const wchar_t* name) const
 {
-	return false;
+	if (type == JSONType_Object)
+	{
+		return object_value->find(name) != object_value->end();
+	}
+	else
+	{
+		return false;
+	}
 }
 
 JSONValue* JSONValue::child(const wchar_t* name)
 {
-	return nullptr;
+	JSONObject::const_iterator it = object_value->find(name);
+	if (it != object_value->end())
+	{
+		return it->second;
+	}
+	else
+	{
+		return nullptr;
+	}
 }
 
 vector<wstring> JSONValue::objectKeys() const
 {
-	return vector<wstring>();
+	vector<wstring> keys;
+
+	if (type == JSONType_Object)
+	{
+		JSONObject::const_iterator iter = object_value->begin();
+		while (iter != object_value->end())
+		{
+			keys.push_back(iter->first);
+
+			iter++;
+		}
+	}
+	return keys;
 }
 
 wstring JSONValue::stringify(const unsigned& indent_size, const unsigned& indent_depth) const
